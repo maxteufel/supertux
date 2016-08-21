@@ -26,6 +26,11 @@
 #include "supertux/tile.hpp"
 #include "util/reader_mapping.hpp"
 
+namespace {
+  const float SNAIL_KICK_SPEED_X = 500;
+  const float SNAIL_KICK_SPEED_Y = -500;
+}
+
 PortableSnowball::PortableSnowball(const ReaderMapping& reader) :
   Rock(reader, "images/objects/lantern/lantern.sprite")
 {
@@ -78,6 +83,13 @@ void
 PortableSnowball::ungrab(MovingObject& object, Direction dir)
 {
   Rock::ungrab(object, dir);
+  physic.set_velocity_x(dir == LEFT ? -SNAIL_KICK_SPEED_X : SNAIL_KICK_SPEED_X);
+  physic.set_velocity_y(0);
+
+  //set_colgroup_active(COLGROUP_MOVING);
+  set_group(COLGROUP_MOVING);
+
+  //Rock::ungrab(object, dir);
 }
 
 /* EOF */
