@@ -138,6 +138,7 @@
 #include "object/player.hpp"
 #include "object/pneumatic_platform.hpp"
 #include "object/portable.hpp"
+#include "object/portable_snowball.hpp"
 #include "object/powerup.hpp"
 #include "object/pulsing_light.hpp"
 #include "object/pushbutton.hpp"
@@ -269,6 +270,7 @@ ObjectFactory::init_factories()
   add_factory<MagicBlock>("magicblock");
   add_factory<Platform>("platform");
   add_factory<PneumaticPlatform>("pneumatic-platform");
+  add_factory<PortableSnowball>("portablesnowball");
   add_factory<PowerUp>("powerup");
   add_factory<PushButton>("pushbutton");
   add_factory<RainParticleSystem>("particles-rain");
