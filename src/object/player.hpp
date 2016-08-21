@@ -289,6 +289,7 @@ private:
   SpritePtr lightsprite;
   SpritePtr powersprite;
   bool on_slope;
+  bool slide_this_frame;
 
 public:
   Direction dir;

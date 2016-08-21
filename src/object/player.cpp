@@ -113,7 +113,6 @@ static const float DUCKED_TUX_HEIGHT = 31.8f;
 
 bool no_water = true;
 
-static const bool SLIDING_ENABLED = true;
 static const float SLOPE_X_ACCELERATION_MULTIPLIER = 10.0f;
 static const float SLOPE_Y_ACCELERATION_MULTIPLIER = 0;
 }
@@ -173,7 +172,8 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   idle_timer(),
   idle_stage(0),
   climbing(0),
-  on_slope(false)
+  on_slope(false),
+  slide_this_frame(false)
 {
   this->name = name_;
   controller = InputManager::current()->get_controller();
@@ -423,8 +423,12 @@ Player::update(float elapsed_time)
   if(!ice_this_frame && on_ground())
     on_ice = false;
 
+  if (!slide_this_frame && on_ground())
+    on_slope = false;
+
   on_ground_flag = false;
   ice_this_frame = false;
+  slide_this_frame = false;
 
   // when invincible, spawn particles
   if (invincible_timer.started())
@@ -457,6 +461,11 @@ Player::update(float elapsed_time)
       sprite->stop_animation();
     else
       sprite->set_animation_loops(-1);
+  }
+
+  if (on_slope) {
+    physic.set_velocity_x(dir == LEFT ? -500 : 500);
+    physic.set_velocity_y(0);
   }
 
 }
@@ -583,10 +592,10 @@ Player::handle_horizontal_input()
     ax *= ICE_ACCELERATION_MULTIPLIER;
   }
 
-  if (on_slope) {
-    ax *= SLOPE_X_ACCELERATION_MULTIPLIER;
-    ay *= SLOPE_Y_ACCELERATION_MULTIPLIER;
-  }
+  //if (on_slope) {
+    //ax *= SLOPE_X_ACCELERATION_MULTIPLIER;
+    //ay *= SLOPE_Y_ACCELERATION_MULTIPLIER;
+  //}
 
   physic.set_velocity(vx, vy);
   physic.set_acceleration(ax, ay);
@@ -1385,7 +1394,6 @@ Player::collision_solid(const CollisionHit& hit)
       physic.set_velocity_y(0);
 
     on_ground_flag = true;
-    on_slope = false;
     floor_normal = hit.slope_normal;
 
     // Butt Jump landed
@@ -1404,7 +1412,8 @@ Player::collision_solid(const CollisionHit& hit)
       Sector::current()->camera->shake(.1f, 0, 5);
     }
 
-    if (SLIDING_ENABLED && (floor_normal.x != 0 || floor_normal.y != 0)) {
+    if (floor_normal.x != 0 || floor_normal.y != 0) {
+      slide_this_frame = true;
       on_slope = true;
 
       // physic.set_velocity_x(dir == LEFT ? -500 : 500);
