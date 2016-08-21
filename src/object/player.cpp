@@ -114,6 +114,8 @@ static const float DUCKED_TUX_HEIGHT = 31.8f;
 bool no_water = true;
 
 static const bool SLIDING_ENABLED = true;
+static const float SLOPE_X_ACCELERATION_MULTIPLIER = 10.0f;
+static const float SLOPE_Y_ACCELERATION_MULTIPLIER = 0;
 }
 
 Player::Player(PlayerStatus* _player_status, const std::string& name_) :
@@ -170,7 +172,8 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   unduck_hurt_timer(),
   idle_timer(),
   idle_stage(0),
-  climbing(0)
+  climbing(0),
+  on_slope(false)
 {
   this->name = name_;
   controller = InputManager::current()->get_controller();
@@ -578,6 +581,11 @@ Player::handle_horizontal_input()
 
   if(on_ice) {
     ax *= ICE_ACCELERATION_MULTIPLIER;
+  }
+
+  if (on_slope) {
+    ax *= SLOPE_X_ACCELERATION_MULTIPLIER;
+    ay *= SLOPE_Y_ACCELERATION_MULTIPLIER;
   }
 
   physic.set_velocity(vx, vy);
@@ -1377,6 +1385,7 @@ Player::collision_solid(const CollisionHit& hit)
       physic.set_velocity_y(0);
 
     on_ground_flag = true;
+    on_slope = false;
     floor_normal = hit.slope_normal;
 
     // Butt Jump landed
@@ -1396,8 +1405,10 @@ Player::collision_solid(const CollisionHit& hit)
     }
 
     if (SLIDING_ENABLED && (floor_normal.x != 0 || floor_normal.y != 0)) {
-      physic.set_velocity_x(dir == LEFT ? -500 : 500);
-      physic.set_velocity_y(0);
+      on_slope = true;
+
+      // physic.set_velocity_x(dir == LEFT ? -500 : 500);
+      // physic.set_velocity_y(0);
     }
 
   } else if(hit.top) {

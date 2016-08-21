@@ -288,6 +288,7 @@ private:
   bool ice_this_frame;
   SpritePtr lightsprite;
   SpritePtr powersprite;
+  bool on_slope;
 
 public:
   Direction dir;
