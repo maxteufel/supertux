@@ -112,6 +112,8 @@ static const float BIG_TUX_HEIGHT = 62.8f;
 static const float DUCKED_TUX_HEIGHT = 31.8f;
 
 bool no_water = true;
+
+static const bool SLIDING_ENABLED = true;
 }
 
 Player::Player(PlayerStatus* _player_status, const std::string& name_) :
@@ -1391,6 +1393,11 @@ Player::collision_solid(const CollisionHit& hit)
                                       -70, -50, 260, 280, Vector(0, 300), 3,
                                       Color(.4f, .4f, .4f), 3, .8f, LAYER_OBJECTS+1));
       Sector::current()->camera->shake(.1f, 0, 5);
+    }
+
+    if (SLIDING_ENABLED && (floor_normal.x != 0 || floor_normal.y != 0)) {
+      physic.set_velocity_x(dir == LEFT ? -500 : 500);
+      physic.set_velocity_y(0);
     }
 
   } else if(hit.top) {
