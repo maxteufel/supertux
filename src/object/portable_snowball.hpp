@@ -31,8 +31,9 @@ public:
   void draw(DrawingContext& context) /*override*/;
   ~PortableSnowball();
 
+  void collision_solid(const CollisionHit& hit);
   HitResponse collision(GameObject& other, const CollisionHit& hit) /*override*/;
-  virtual void collision_tile(uint32_t tile_attributes) /*override*/;
+  //virtual void collision_tile(uint32_t tile_attributes) /*override*/;
 
   void grab(MovingObject& object, const Vector& pos, Direction dir) /*override*/;
   void ungrab(MovingObject& object, Direction dir) /*override*/;
