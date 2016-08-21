@@ -47,7 +47,14 @@ public:
   virtual ObjectSettings get_settings() /*override*/;
 
 private:
-  //
+  enum State {
+    STATE_NORMAL,
+    STATE_THROWN
+  }
+
+private:
+  State state;
+  //Timer thrown_vanish_timer;
 
 private:
   PortableSnowball(const PortableSnowball&);

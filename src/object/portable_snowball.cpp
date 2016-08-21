@@ -32,13 +32,15 @@ namespace {
 }
 
 PortableSnowball::PortableSnowball(const ReaderMapping& reader) :
-  Rock(reader, "images/objects/lantern/lantern.sprite")
+  Rock(reader, "images/objects/lantern/lantern.sprite"),
+  state(STATE_NORMAL)
 {
   SoundManager::current()->preload("sounds/willocatch.wav");
 }
 
 PortableSnowball::PortableSnowball(const Vector& pos) :
-  Rock(pos, "images/objects/lantern/lantern.sprite")
+  Rock(pos, "images/objects/lantern/lantern.sprite"),
+  state(STATE_NORMAL)
 {
   SoundManager::current()->preload("sounds/willocatch.wav");
 }
@@ -61,16 +63,32 @@ PortableSnowball::draw(DrawingContext& context){
   MovingSprite::draw(context);
 }
 
-HitResponse PortableSnowball::collision(GameObject& other, const CollisionHit& hit) {
-  return Rock::collision(other, hit);
+void
+PortableSnowball::collision_solid(const CollisionHit& hit)
+{
+  switch (state) {
+    case STATE_NORMAL:
+      return Rock::collision(hit);
+    case STATE_THROWN:
+      // do our own magic here
+      break;
+    default:
+      assert(false);
+  }
 }
 
-void
-PortableSnowball::collision_tile(uint32_t tile_attributes)
-{
-  if (tile_attributes & Tile::WATER) {
-    log_warning << "PortableSnowball collided with water tile" << std::endl;
+HitResponse PortableSnowball::collision(GameObject& other, const CollisionHit& hit) {
+  switch (state) {
+    case STATE_NORMAL:
+      return Rock::collision(other, hit);
+    case STATE_THROWN:
+      // do our own magic here
+      break;
+    default:
+      assert(false);
   }
+
+  return FORCE_MOVE;
 }
 
 void
@@ -83,13 +101,13 @@ void
 PortableSnowball::ungrab(MovingObject& object, Direction dir)
 {
   Rock::ungrab(object, dir);
+
+  state = STATE_THROWN;
+
   physic.set_velocity_x(dir == LEFT ? -SNAIL_KICK_SPEED_X : SNAIL_KICK_SPEED_X);
   physic.set_velocity_y(0);
 
-  //set_colgroup_active(COLGROUP_MOVING);
   set_group(COLGROUP_MOVING);
-
-  //Rock::ungrab(object, dir);
 }
 
 /* EOF */
