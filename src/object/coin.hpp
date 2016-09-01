@@ -19,12 +19,14 @@
 
 #include "object/moving_sprite.hpp"
 #include "supertux/physic.hpp"
+#include "supertux/script_interface.hpp"
 
 class Path;
 class PathWalker;
 class TileMap;
 
-class Coin : public MovingSprite
+class Coin : public MovingSprite,
+             public ScriptInterface
 {
 public:
   Coin(const Vector& pos);
@@ -51,6 +53,9 @@ public:
   Path* get_path() const {
     return path.get();
   }
+
+  virtual void expose(HSQUIRRELVM vm, SQInteger table_idx);
+  virtual void unexpose(HSQUIRRELVM vm, SQInteger table_idx);
 
 private:
   std::shared_ptr<Path> path;

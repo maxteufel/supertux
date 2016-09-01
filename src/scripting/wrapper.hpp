@@ -18,6 +18,8 @@ class Camera;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::Camera* object, bool setup_releasehook = false);
 class Candle;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::Candle* object, bool setup_releasehook = false);
+class Coin;
+void create_squirrel_instance(HSQUIRRELVM v, scripting::Coin* object, bool setup_releasehook = false);
 class DisplayEffect;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::DisplayEffect* object, bool setup_releasehook = false);
 class FloatingImage;

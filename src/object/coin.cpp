@@ -21,6 +21,8 @@
 #include "object/bouncy_coin.hpp"
 #include "object/player.hpp"
 #include "object/tilemap.hpp"
+#include "scripting/coin.hpp"
+#include "scripting/squirrel_util.hpp"
 #include "supertux/level.hpp"
 #include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
@@ -72,6 +74,8 @@ Coin::Coin(const ReaderMapping& reader)
     Vector v = path->get_base();
     set_pos(v);
   }
+
+  if (!reader.get("name", name)) name = "";
 
   SoundManager::current()->preload("sounds/coin.wav");
 }
@@ -188,6 +192,27 @@ Coin::collision(GameObject& other, const CollisionHit& )
 
   collect();
   return ABORT_MOVE;
+}
+
+void
+Coin::expose(HSQUIRRELVM vm, SQInteger table_idx)
+{
+  if (name.empty()) {
+    return;
+  }
+
+  auto _this = new scripting::Coin(this);
+  expose_object(vm, table_idx, _this, name, true);
+}
+
+void
+Coin::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
+{
+  if (name.empty()) {
+    return;
+  }
+
+  scripting::unexpose_object(vm, table_idx, name);
 }
 
 /* The following defines a coin subject to gravity */
